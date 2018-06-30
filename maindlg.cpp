@@ -4,8 +4,12 @@
 
 #include "stdafx.h"
 #include "resource.h"
-
 #include "maindlg.h"
+#include <tchar.h>
+#include "Dlg2Side.h"
+
+//using namespace ATL;
+
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -22,7 +26,11 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	m_richSrc = GetDlgItem(IDC_RICH_SRC);
 	m_richTar = GetDlgItem(IDC_RICH_TAR);
+
 	m_cmbOperType = GetDlgItem(IDC_CMB_TYPE);
+	m_cmbOperType.AddString(_T("两边添加"));
+	m_cmbOperType.SetCurSel(0);
+	
 	return TRUE;
 }
 
@@ -33,7 +41,7 @@ LRESULT CMainDlg::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	return 0;
 }
 
-LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainDlg::OnConverty(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	DoConvert();
 	return 0;
@@ -47,10 +55,95 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 
 void CMainDlg::DoConvert()
 {
-	
+	int nSel = m_cmbOperType.GetCurSel();
+	switch (nSel) 
+	{
+	case 0:
+		{
+			Do2SideAdd();
+		}
+		break;
+	default:break;
+	}
 }
 
-void CMainDlg::GetLines()
+CSimpleArray<ATL::CString> CMainDlg::GetLines()
 {
+	CString strText;
+	m_richSrc.GetWindowText(strText);
 	
+	CSimpleArray<CString> strArr;
+	const TCHAR* pstrBuf = strText.GetString();
+	const TCHAR* pstrEnd = pstrBuf+strText.GetLength();
+	while(pstrBuf<pstrEnd) {
+		const TCHAR* pNext = NULL;
+		int  line_len = 0;
+		int nDivLen = 0;
+		do {
+			pNext = _tcsstr(pstrBuf, _T("\r\n"));
+			if (pNext) { nDivLen = 2; break; }
+			pNext = _tcsstr(pstrBuf, _T("\n"));
+			if (pNext) { nDivLen = 1; break; }
+		} while (0);
+		
+		if (pNext) {
+			line_len = pNext - pstrBuf;
+		}
+		else {
+			line_len = _tcslen(pstrBuf);
+		}
+		CString strTemp;
+		strTemp.Append(pstrBuf, line_len);
+		strArr.Add(strTemp);
+
+		pstrBuf += line_len + nDivLen;
+	}
+
+	return strArr;
 }
+
+//进行逐行处理
+void CMainDlg::Do2SideAdd()
+{
+	CSimpleArray<CString> lines = GetLines();
+	if (lines.GetSize() == 0) {
+		return;
+	}
+
+	CDlg2Side dlgSetting;
+	if (IDOK != dlgSetting.DoModal()) {
+		return;
+	}
+
+	stSetting2Side setting = dlgSetting.GetSetting();
+	m_richTar.SetWindowText(_T(""));
+
+	for (int i = 0; i < lines.GetSize(); i++) {
+		CString line = lines[i];
+		
+		if (setting.bTrimLeftRight) {
+			line.Trim();
+		}
+		if (setting.bDelEmpty) {
+			if (!setting.bTrimLeftRight) { line.Trim(); }
+			if (line.IsEmpty())
+			{
+				continue; //!
+			}
+		}
+		if (!setting.strLeft.IsEmpty()) {
+			line = setting.strLeft + line;
+		}
+		if (!setting.strRight.IsEmpty()) {
+			line += setting.strRight;
+		}
+		if (setting.bReplacedCrlf) {
+			line += _T("\r\n");
+		}
+
+		m_richTar.AppendText(line, FALSE);
+		//m_richTar.AppendText(_T("\r\n"), FALSE);
+	}
+}
+
+

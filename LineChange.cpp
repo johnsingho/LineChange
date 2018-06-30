@@ -17,6 +17,12 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 // make the EXE free threaded. This means that calls come in on a random RPC thread.
 //	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	ATLASSERT(SUCCEEDED(hRes));
+	HMODULE hRichEdit;
+	hRichEdit = LoadLibrary(_T("RICHED20.DLL"));
+	if (!hRichEdit) {
+		OutputDebugString(_T("*** load RICHED20 error!"));
+		return(-1);
+	}
 
 	// this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
 	::DefWindowProc(NULL, 0, 0, 0L);
@@ -34,6 +40,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	}
 
 	_Module.Term();
+	
+	FreeLibrary(hRichEdit);
 	::CoUninitialize();
 
 	return nRet;

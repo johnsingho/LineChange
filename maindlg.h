@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "Common/ATLCONTROLS.H"
 
 class CMainDlg : public CDialogImpl<CMainDlg>
 {
@@ -19,7 +18,7 @@ public:
 	BEGIN_MSG_MAP(CMainDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
-		COMMAND_ID_HANDLER(IDOK, OnOK)
+		COMMAND_ID_HANDLER(IDC_CONVERT, OnConverty)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
 	END_MSG_MAP()
 
@@ -30,10 +29,12 @@ public:
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnConverty(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 private:
 	void DoConvert();
+	CSimpleArray<ATL::CString> GetLines();
+	void Do2SideAdd();
 private:
 	CRichEditCtrl m_richSrc;
 	CRichEditCtrl m_richTar;
