@@ -33,7 +33,7 @@ public:
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 private:
 	void DoConvert();
-	CSimpleArray<ATL::CString> GetLines();
+	CSimpleArray<CString> GetLines();
 	void Do2SideAdd();
 private:
 	CRichEditCtrl m_richSrc;

@@ -22,10 +22,12 @@
 #if _MSC_VER>1600
 #include <atlapp.h>
 #include <atlstr.h>
+using ATL::CString;
 #else
 #define _WTL_USE_CSTRING
 #include <atlapp.h>
 #include <atlmisc.h>
+using WTL::CString;
 #endif
 
 

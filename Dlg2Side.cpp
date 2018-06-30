@@ -29,8 +29,10 @@ LRESULT CDlg2Side::OnInitDialog(UINT, WPARAM, LPARAM, BOOL &)
 	cmbBox.AddString(_T("\""));
 	cmbBox.SetFont(m_fontCmb);
 
+	TCHAR szBuf[128]={0};
 	cmbBox = GetDlgItem(IDC_CMB_RIGHT);
-	cmbBox.GetWindowText(m_setting.strRight);
+	cmbBox.GetWindowText(szBuf, 127);
+	m_setting.strRight=szBuf;
 	cmbBox.AddString(_T("', "));
 	cmbBox.AddString(_T("\", "));
 	cmbBox.SetFont(m_fontCmb);
@@ -43,15 +45,19 @@ LRESULT CDlg2Side::OnInitDialog(UINT, WPARAM, LPARAM, BOOL &)
 
 LRESULT CDlg2Side::OnOK(WORD, WORD wID, HWND, BOOL &)
 {
+	TCHAR szBuf[128]={0};
 	CComboBox cmbBox;
 	cmbBox = GetDlgItem(IDC_CMB_LEFT);
-	cmbBox.GetWindowText(m_setting.strLeft);
+	cmbBox.GetWindowText(szBuf, 127);
+	m_setting.strLeft=szBuf;
 	cmbBox = GetDlgItem(IDC_CMB_RIGHT);
-	cmbBox.GetWindowText(m_setting.strRight);
+	cmbBox.GetWindowText(szBuf, 127);
+	m_setting.strRight=szBuf;
 
 	CEdit editBox;
 	editBox = GetDlgItem(IDC_EDIT_REPCRLF);
-	editBox.GetWindowText(m_setting.strReplacedCrlf);
+	editBox.GetWindowText(szBuf, 127);
+	m_setting.strReplacedCrlf=szBuf;
 
 	CButton chkBox = GetDlgItem(IDC_CHK_TRIM);
 	m_setting.bTrimLeftRight = (BST_CHECKED == chkBox.GetCheck());

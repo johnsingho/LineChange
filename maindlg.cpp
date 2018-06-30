@@ -67,13 +67,18 @@ void CMainDlg::DoConvert()
 	}
 }
 
-CSimpleArray<ATL::CString> CMainDlg::GetLines()
+CSimpleArray<CString> CMainDlg::GetLines()
 {
-	CString strText;
-	m_richSrc.GetWindowText(strText);
-	
+	TCHAR* pBuf;
+	int nLen = m_richSrc.GetWindowTextLength();
+	pBuf = new TCHAR[nLen+1];
+	m_richSrc.GetWindowText(pBuf, nLen);
+	pBuf[nLen]=NULL;
+	CString strText(pBuf);
+	delete[] pBuf;
+
 	CSimpleArray<CString> strArr;
-	const TCHAR* pstrBuf = strText.GetString();
+	const TCHAR* pstrBuf = (LPCTSTR)strText;
 	const TCHAR* pstrEnd = pstrBuf+strText.GetLength();
 	while(pstrBuf<pstrEnd) {
 		const TCHAR* pNext = NULL;
@@ -92,8 +97,7 @@ CSimpleArray<ATL::CString> CMainDlg::GetLines()
 		else {
 			line_len = _tcslen(pstrBuf);
 		}
-		CString strTemp;
-		strTemp.Append(pstrBuf, line_len);
+		CString strTemp(pstrBuf, line_len);
 		strArr.Add(strTemp);
 
 		pstrBuf += line_len + nDivLen;
@@ -119,13 +123,18 @@ void CMainDlg::Do2SideAdd()
 	m_richTar.SetWindowText(_T(""));
 
 	for (int i = 0; i < lines.GetSize(); i++) {
-		CString line = lines[i];
+		CString line(lines[i]);
 		
 		if (setting.bTrimLeftRight) {
-			line.Trim();
+			line.TrimLeft();
+			line.TrimRight();
 		}
 		if (setting.bDelEmpty) {
-			if (!setting.bTrimLeftRight) { line.Trim(); }
+			if (!setting.bTrimLeftRight) 
+			{ 
+				line.TrimLeft(); 
+				line.TrimRight();
+			}
 			if (line.IsEmpty())
 			{
 				continue; //!
@@ -136,6 +145,9 @@ void CMainDlg::Do2SideAdd()
 		}
 		if (!setting.strRight.IsEmpty()) {
 			line += setting.strRight;
+		}
+		if (!setting.strReplacedCrlf.IsEmpty()) {
+			line += setting.strReplacedCrlf;
 		}
 		if (setting.bReplacedCrlf) {
 			line += _T("\r\n");
