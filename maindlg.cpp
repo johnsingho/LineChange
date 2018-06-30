@@ -67,7 +67,7 @@ void CMainDlg::DoConvert()
 	}
 }
 
-CSimpleArray<CString> CMainDlg::GetLines()
+CSimpleArray<CString>* CMainDlg::GetLines()
 {
 	TCHAR* pBuf;
 	int nLen = m_richSrc.GetWindowTextLength();
@@ -77,7 +77,7 @@ CSimpleArray<CString> CMainDlg::GetLines()
 	CString strText(pBuf);
 	delete[] pBuf;
 
-	CSimpleArray<CString> strArr;
+	CSimpleArray<CString>* pstrArr = new CSimpleArray<CString>();
 	const TCHAR* pstrBuf = (LPCTSTR)strText;
 	const TCHAR* pstrEnd = pstrBuf+strText.GetLength();
 	while(pstrBuf<pstrEnd) {
@@ -98,19 +98,20 @@ CSimpleArray<CString> CMainDlg::GetLines()
 			line_len = _tcslen(pstrBuf);
 		}
 		CString strTemp(pstrBuf, line_len);
-		strArr.Add(strTemp);
+		pstrArr->Add(strTemp);
 
 		pstrBuf += line_len + nDivLen;
 	}
 
-	return strArr;
+	return pstrArr;
 }
 
 //进行逐行处理
 void CMainDlg::Do2SideAdd()
 {
-	CSimpleArray<CString> lines = GetLines();
-	if (lines.GetSize() == 0) {
+	CSimpleArray<CString>* pLines = GetLines();
+	if (!pLines || pLines->GetSize() == 0) {
+		if(pLines){delete pLines;}
 		return;
 	}
 
@@ -122,8 +123,8 @@ void CMainDlg::Do2SideAdd()
 	stSetting2Side setting = dlgSetting.GetSetting();
 	m_richTar.SetWindowText(_T(""));
 
-	for (int i = 0; i < lines.GetSize(); i++) {
-		CString line(lines[i]);
+	for (int i = 0; i < pLines->GetSize(); i++) {
+		CString line( (*pLines)[i]);
 		
 		if (setting.bTrimLeftRight) {
 			line.TrimLeft();
@@ -156,6 +157,8 @@ void CMainDlg::Do2SideAdd()
 		m_richTar.AppendText(line, FALSE);
 		//m_richTar.AppendText(_T("\r\n"), FALSE);
 	}
+
+	delete pLines;
 }
 
 
