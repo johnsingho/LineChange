@@ -71,8 +71,9 @@ CSimpleArray<CString>* CMainDlg::GetLines()
 {
 	TCHAR* pBuf;
 	int nLen = m_richSrc.GetWindowTextLength();
-	pBuf = new TCHAR[nLen+1];
-	m_richSrc.GetWindowText(pBuf, nLen);
+	pBuf = new TCHAR[nLen+2];
+	//m_richSrc.GetWindowText(pBuf, nLen);
+	m_richSrc.GetTextEx(pBuf, nLen+1, GT_USECRLF, CP_WINUNICODE);
 	pBuf[nLen]=NULL;
 	CString strText(pBuf);
 	delete[] pBuf;
