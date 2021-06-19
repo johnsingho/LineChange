@@ -10,7 +10,7 @@
 #endif // _MSC_VER >= 1000
 
 
-class CMainDlg : public CDialogImpl<CMainDlg>
+class CMainDlg : public CDialogImpl<CMainDlg>, public CDynamicDialogLayout<CMainDlg>
 {
 public:
 	enum { IDD = IDD_MAINDLG };
@@ -20,6 +20,7 @@ public:
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_ID_HANDLER(IDC_CONVERT, OnConverty)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+		CHAIN_MSG_MAP(CDynamicDialogLayout<CMainDlg>)
 	END_MSG_MAP()
 
 // Handler prototypes (uncomment arguments if needed):

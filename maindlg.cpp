@@ -15,6 +15,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 {
 	// center the dialog on the screen
 	CenterWindow();
+	InitDynamicLayout(false);
 
 	// set icons
 	HICON hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
