@@ -2,13 +2,31 @@
 //
 
 #include "stdafx.h"
-
 #include "resource.h"
-
 #include "maindlg.h"
 
 CAppModule _Module;
 
+int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
+{
+	CMessageLoop theLoop;
+	_Module.AddMessageLoop(&theLoop);
+
+	CMainDlg dlgMain;
+
+	if (dlgMain.Create(NULL) == NULL)
+	{
+		ATLTRACE(_T("Main dialog creation failed!\n"));
+		return 0;
+	}
+
+	dlgMain.ShowWindow(nCmdShow);
+
+	int nRet = theLoop.Run();
+
+	_Module.RemoveMessageLoop();
+	return nRet;
+}
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
@@ -32,12 +50,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
 
-	int nRet = 0;
-	// BLOCK: Run application
-	{
-		CMainDlg dlgMain;
-		nRet = dlgMain.DoModal();
-	}
+	int nRet = Run(lpstrCmdLine, nCmdShow);
 
 	_Module.Term();
 	

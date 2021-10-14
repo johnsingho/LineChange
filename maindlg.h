@@ -9,14 +9,22 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
+#include <memory>
 
-class CMainDlg : public CDialogImpl<CMainDlg>, public CDynamicDialogLayout<CMainDlg>
+
+
+class CMainDlg : public CDialogImpl<CMainDlg>, public CDynamicDialogLayout<CMainDlg>, public CUpdateUI<CMainDlg>
+				,public CMessageFilter, public CIdleHandler
 {
 public:
 	enum { IDD = IDD_MAINDLG };
 
+	BEGIN_UPDATE_UI_MAP(CMainDlg)
+	END_UPDATE_UI_MAP()
+
 	BEGIN_MSG_MAP(CMainDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		MESSAGE_HANDLER(WM_SYSCOMMAND, OnSysCommand)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_ID_HANDLER(IDC_CONVERT, OnConverty)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
@@ -32,10 +40,25 @@ public:
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnConverty(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnSysCommand(UINT, WPARAM, LPARAM, BOOL&);
+
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual BOOL OnIdle();
 private:
 	void DoConvert();
-	CSimpleArray<CString>* GetLines();
+	std::unique_ptr<CSimpleArray<CString>> GetLines();
 	void Do2SideAdd();
+	void DoSlashEscape();
+	void DoSlashUnEscape();
+	void DoURLHexUnEscape();
+	void DoToLinuxSlash();
+	void DoToWindowSlash();
+	void DoToMingWPath();
+	void DoFromMingWPath();
+	void DoEscapeHtmlChar();
+	void DoUnEscapeHtmlChar();
+
+
 private:
 	CRichEditCtrl m_richSrc;
 	CRichEditCtrl m_richTar;
